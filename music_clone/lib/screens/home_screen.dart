@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:music_clone/widgets/album/spotify_album.dart';
+import 'package:music_clone/service/spotify_service.dart';
+import 'package:music_clone/widgets/spotify_list/spotify_album.dart';
+import 'package:music_clone/widgets/spotify_list/spotify_artist.dart';
+import '../models/album.dart';
+import '../models/artist.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -23,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen>
         title: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            "Trang chủ",
+            "",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 24,
@@ -56,7 +60,34 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-      body: SpotifyAlbum(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Album Hot",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
+              SpotifyAlbumList(),
+              Text(
+                "Nghệ sĩ",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
+              SpotifyArtistList(),
+            ],
+          ),
+        ),
+      ),
       bottomNavigationBar: Container(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
