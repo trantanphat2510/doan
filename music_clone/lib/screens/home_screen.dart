@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Column(
@@ -71,16 +71,19 @@ class _HomeScreenState extends State<HomeScreen>
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 30,
                 ),
               ),
               SpotifyAlbumList(),
+              const SizedBox(
+                height: 20,
+              ),
               Text(
                 "Nghệ sĩ",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 30,
                 ),
               ),
               SpotifyArtistList(),

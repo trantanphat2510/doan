@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/models/artist.dart';
 import 'package:music_clone/service/spotify_service.dart';
+import 'package:music_clone/screens/artist_details_screen.dart'; // Import the ArtistDetailsScreen
 
 class SpotifyArtistList extends StatelessWidget {
   const SpotifyArtistList({Key? key}) : super(key: key);
@@ -13,8 +14,11 @@ class SpotifyArtistList extends StatelessWidget {
       future: Future.wait([
         spotifyService.getArtist(
             '5dfZ5uSmzR7VQK0udbAVpf'), // Replace with real artist IDs if you want.
+        spotifyService.getArtist("57g2v7gJZepcwsuwssIfZs"),
         spotifyService.getArtist('0ZbgKh0FgPYeFP38nVaEGp'),
         spotifyService.getArtist('4KPyQxL1zqEiBcTwW6c9HE'),
+        spotifyService.getArtist('3Wj34lTDJnPp70u4YCl4jz'),
+        spotifyService.getArtist('6CGGvCBHWqQ4HXtn5aLhbh'),
       ]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -23,7 +27,7 @@ class SpotifyArtistList extends StatelessWidget {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           return SizedBox(
-            height: 300, // Adjust the height as needed
+            height: 270, // Adjust the height as needed
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: snapshot.data!.length,
@@ -31,52 +35,64 @@ class SpotifyArtistList extends StatelessWidget {
                 final artist = snapshot.data![index];
                 return SizedBox(
                   width: 210, // Adjust the width as needed
-                  child: Card(
-                    color: Colors.transparent,
-                    clipBehavior: Clip.antiAlias,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(8.0), // Adjust corner rounding
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: artist.imageUrl != null
-                              ? Image.network(
-                                  artist.imageUrl!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                )
-                              : Container(
-                                  color:
-                                      Colors.grey), // Placeholder if no image
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ArtistDetailsScreen(artistId: artist.id),
                         ),
-                        Padding(
+                      );
+                    },
+                    child: Card(
+                      color: Colors.transparent,
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            10.0), // Adjust corner rounding
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: artist.imageUrl != null
+                                ? Image.network(
+                                    artist.imageUrl!,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  )
+                                : Container(
+                                    color:
+                                        Colors.grey), // Placeholder if no image
+                          ),
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    artist.name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                    ),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  artist.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.white,
                                   ),
-                                  Text(
-                                    artist.genres.join(', '),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white60,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow
-                                        .ellipsis, // to avoid overflow
-                                  ),
-                                ])),
-                      ],
+                                ),
+                                // Text(
+                                //   artist.genres.join(', '),
+                                //   style: const TextStyle(
+                                //     fontSize: 14,
+                                //     color: Colors.white60,
+                                //   ),
+                                //   maxLines: 1,
+                                //   overflow: TextOverflow
+                                //       .ellipsis, // to avoid overflow
+                                // ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
