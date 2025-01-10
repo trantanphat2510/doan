@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/models/artist.dart';
 import 'package:music_clone/models/track.dart';
+import 'package:music_clone/screens/player_screen.dart';
 import 'package:music_clone/service/spotify_service.dart';
 
 class ArtistDetailsScreen extends StatefulWidget {
@@ -128,6 +129,16 @@ class _ArtistDetailsScreenState extends State<ArtistDetailsScreen> {
                                         )
                                       : const Icon(Icons.music_note,
                                           color: Colors.white),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => PlayerScreen(
+                                            track: track,
+                                            imageUrl: track.imageUrl),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             );

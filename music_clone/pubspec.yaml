@@ -50,9 +50,9 @@ dependencies:
   intl:
   connectivity_plus: ^6.1.1
 
-  # Yes
   provider: ^6.1.2
   cached_network_image: ^3.4.1
+  just_audio: ^0.9.42
 
 dev_dependencies:
   flutter_test:

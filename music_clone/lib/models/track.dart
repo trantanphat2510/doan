@@ -3,12 +3,14 @@ class Track {
   final String name;
   final List<String> artists;
   final String? imageUrl;
+  final String? previewUrl; // Add previewUrl property
 
   Track({
     required this.id,
     required this.name,
     required this.artists,
     this.imageUrl,
+    this.previewUrl, // Add previewUrl to the constructor
   });
 
   factory Track.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class Track {
               (json['album']['images'] as List).isNotEmpty
           ? (json['album']['images'] as List)[0]['url']
           : null,
+      previewUrl: json['preview_url'], // Extract previewUrl from JSON
     );
   }
 
@@ -31,11 +34,12 @@ class Track {
       'name': name,
       'artists': artists,
       'imageUrl': imageUrl,
+      'previewUrl': previewUrl,
     };
   }
 
   @override
   String toString() {
-    return 'Track{id: $id, name: $name, artists: $artists,  imageUrl: $imageUrl}';
+    return 'Track{id: $id, name: $name, artists: $artists,  imageUrl: $imageUrl, previewUrl: $previewUrl}';
   }
 }

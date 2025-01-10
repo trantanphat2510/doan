@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/models/album.dart';
 import 'package:music_clone/models/track.dart';
+import 'package:music_clone/screens/player_screen.dart';
 import 'package:music_clone/service/spotify_service.dart';
 
 class AlbumDetailsScreen extends StatefulWidget {
@@ -16,12 +17,21 @@ class _AlbumDetailsScreenState extends State<AlbumDetailsScreen> {
   late Future<Album> _albumFuture;
   late Future<List<Track>> _tracksFuture;
   final SpotifyService spotifyService = SpotifyService();
+  String? albumImageUrl;
 
   @override
   void initState() {
     super.initState();
     _albumFuture = spotifyService.getAlbum(widget.albumId);
     _tracksFuture = spotifyService.getTracksFromAlbum(widget.albumId);
+    _loadAlbumImageUrl();
+  }
+
+  Future<void> _loadAlbumImageUrl() async {
+    final album = await _albumFuture;
+    setState(() {
+      albumImageUrl = album.imageUrl;
+    });
   }
 
   @override
@@ -124,6 +134,17 @@ class _AlbumDetailsScreenState extends State<AlbumDetailsScreen> {
                                   track.artists.join(', '),
                                   style: const TextStyle(color: Colors.white60),
                                 ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PlayerScreen(
+                                        track: track,
+                                        imageUrl: albumImageUrl,
+                                      ),
+                                    ),
+                                  );
+                                },
                               );
                             },
                           );
