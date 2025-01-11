@@ -1,5 +1,8 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:music_clone/models/track.dart';
+import 'package:music_clone/service/spotify_service.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Track track;
@@ -14,6 +17,55 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen> {
   bool _isPlaying = false;
+  final _player = AudioPlayer();
+  final SpotifyService _spotifyService = SpotifyService(); // Dịch vụ Spotify
+  String? _deviceId;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _player.dispose();
+  }
+
+  void initState() {
+    super.initState();
+
+    // Khởi tạo SpotifyService
+    final spotifyService = SpotifyService();
+
+    // Lấy thông tin track từ Spotify bằng trackId
+    spotifyService.getTrack(widget.track.id).then((track) async {
+      String tempSongName = track.name;
+
+      if (tempSongName.isNotEmpty) {
+        // Cập nhật thông tin bài hát
+        String songName = track.name;
+        String artistName = track.artists.isNotEmpty ? track.artists.first : "";
+        String? songImage = track.imageUrl;
+        String? artistImage =
+            track.artists.isNotEmpty ? track.artists.first : null;
+
+        // Tìm kiếm video trên YouTube với tên bài hát và nghệ sĩ
+        final yt = YoutubeExplode();
+        final video =
+            (await yt.search.search("$tempSongName $artistName")).first;
+        final videoId = video.id.value;
+
+        // Lấy thời lượng video
+        Duration? duration = video.duration;
+
+        setState(() {});
+
+        // Lấy manifest của video và stream audio
+        var manifest = await yt.videos.streamsClient.getManifest(videoId);
+        var audioUrl = manifest.audioOnly.last.url;
+
+        // Phát nhạc
+        _player.play(UrlSource(audioUrl.toString()));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +82,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
           IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             onPressed: () {},
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -39,14 +91,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              decoration: BoxDecoration(
+            Center(
+              child: Container(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   image: DecorationImage(
-                      image: NetworkImage(widget.imageUrl ?? ""),
-                      fit: BoxFit.cover)),
-              width: double.infinity,
-              height: 300,
+                    image: NetworkImage(widget.imageUrl ?? ""),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                width: 300,
+                height: 300,
+              ),
             ),
             const SizedBox(height: 20),
             Text(
@@ -66,19 +122,24 @@ class _PlayerScreenState extends State<PlayerScreen> {
             ),
             const Spacer(),
             Slider(
-              value: 0.3, // Mock value for slider
-              onChanged: (value) {},
+              value: 0,
+              max: (widget.track.duration ?? 0).toDouble(),
+              onChanged: (value) async {},
               activeColor: Colors.white,
             ),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
-                  "0:04",
-                  style: TextStyle(color: Colors.white70),
+                  "0:00",
+                  style: const TextStyle(color: Colors.white70),
                 ),
-                Text("-3:16", style: TextStyle(color: Colors.white70))
+                Text(
+                  _formatDuration(
+                      Duration(milliseconds: widget.track.duration ?? 0)),
+                  style: const TextStyle(color: Colors.white70),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -86,29 +147,37 @@ class _PlayerScreenState extends State<PlayerScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.shuffle, color: Colors.white)),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.skip_previous, color: Colors.white)),
-                IconButton(
-                  icon: Icon(
-                    _isPlaying ? Icons.pause_circle : Icons.play_circle,
-                    size: 60,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isPlaying = !_isPlaying;
-                    });
-                  },
+                  onPressed: () {},
+                  icon: const Icon(Icons.shuffle, color: Colors.white),
                 ),
                 IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.skip_next, color: Colors.white)),
+                  onPressed: () {},
+                  icon: const Icon(Icons.skip_previous, color: Colors.white),
+                ),
                 IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.access_time, color: Colors.white)),
+                    onPressed: () async {
+                      if (_player.state == PlayerState.playing) {
+                        await _player.pause();
+                      } else {
+                        await _player.resume();
+                      }
+                      setState(() {});
+                    },
+                    icon: Icon(
+                      _player.state == PlayerState.playing
+                          ? Icons.pause
+                          : Icons.play_circle,
+                      color: Colors.white,
+                      size: 60,
+                    )),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.skip_next, color: Colors.white),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.access_time, color: Colors.white),
+                ),
               ],
             ),
             const SizedBox(height: 10),
@@ -116,11 +185,13 @@ class _PlayerScreenState extends State<PlayerScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.list, color: Colors.white)),
+                  onPressed: () {},
+                  icon: const Icon(Icons.list, color: Colors.white),
+                ),
                 IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.share, color: Colors.white)),
+                  onPressed: () {},
+                  icon: const Icon(Icons.share, color: Colors.white),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -128,5 +199,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
       ),
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes.toString().padLeft(2, '0');
+    final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+    return "$minutes:$seconds";
   }
 }

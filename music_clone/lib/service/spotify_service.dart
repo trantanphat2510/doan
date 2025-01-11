@@ -109,4 +109,63 @@ class SpotifyService {
       throw Exception('Failed to load top tracks for artist');
     }
   }
+
+  Future<void> playTrack({
+    required String deviceId,
+    String? contextUri,
+    List<String>? uris,
+    Map<String, dynamic>? offset,
+    int? positionMs,
+  }) async {
+    final token = await _getAccessToken();
+    final url = "https://api.spotify.com/v1/me/player/play?device_id=$deviceId";
+
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
+    final body = {
+      if (contextUri != null) 'context_uri': contextUri,
+      if (uris != null) 'uris': uris,
+      if (offset != null) 'offset': offset,
+      if (positionMs != null) 'position_ms': positionMs,
+    };
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: headers,
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 204) {
+        print("Track played successfully!");
+      } else {
+        print("Error playing track: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      print("Error sending play request: $e");
+    }
+  }
+
+  Future<String?> getActiveDeviceId() async {
+    final token = await _getAccessToken();
+    final response = await http.get(
+      Uri.parse('https://api.spotify.com/v1/me/player/devices'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final devices = data['devices'] as List<dynamic>;
+      final activeDevice = devices.firstWhere(
+          (device) => device['is_active'] == true,
+          orElse: () => null);
+      return activeDevice?['id'];
+    } else {
+      print('Failed to get active devices: ${response.statusCode}');
+      return null;
+    }
+  }
 }

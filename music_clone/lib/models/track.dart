@@ -3,14 +3,18 @@ class Track {
   final String name;
   final List<String> artists;
   final String? imageUrl;
-  final String? previewUrl; // Add previewUrl property
+  final String? previewUrl;
+  final int? duration; // Thời lượng bài hát (ms)
+  final String uri;
 
   Track({
     required this.id,
     required this.name,
     required this.artists,
     this.imageUrl,
-    this.previewUrl, // Add previewUrl to the constructor
+    this.previewUrl,
+    this.duration,
+    required this.uri,
   });
 
   factory Track.fromJson(Map<String, dynamic> json) {
@@ -24,7 +28,9 @@ class Track {
               (json['album']['images'] as List).isNotEmpty
           ? (json['album']['images'] as List)[0]['url']
           : null,
-      previewUrl: json['preview_url'], // Extract previewUrl from JSON
+      previewUrl: json['preview_url'],
+      duration: json['duration_ms'], // Thời lượng từ API (ms)
+      uri: json['uri'],
     );
   }
 
@@ -35,11 +41,13 @@ class Track {
       'artists': artists,
       'imageUrl': imageUrl,
       'previewUrl': previewUrl,
+      'duration': duration,
+      'uri': uri,
     };
   }
 
   @override
   String toString() {
-    return 'Track{id: $id, name: $name, artists: $artists,  imageUrl: $imageUrl, previewUrl: $previewUrl}';
+    return 'Track{id: $id, name: $name, artists: $artists, imageUrl: $imageUrl, previewUrl: $previewUrl, duration: $duration, uri: $uri}';
   }
 }
