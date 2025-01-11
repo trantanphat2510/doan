@@ -1,3 +1,4 @@
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:music_clone/models/track.dart';
@@ -16,7 +17,6 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  bool _isPlaying = false;
   final _player = AudioPlayer();
   final SpotifyService _spotifyService = SpotifyService(); // Dịch vụ Spotify
   String? _deviceId;
@@ -30,14 +30,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   void initState() {
     super.initState();
-
     // Khởi tạo SpotifyService
     final spotifyService = SpotifyService();
-
     // Lấy thông tin track từ Spotify bằng trackId
     spotifyService.getTrack(widget.track.id).then((track) async {
       String tempSongName = track.name;
-
       if (tempSongName.isNotEmpty) {
         // Cập nhật thông tin bài hát
         String songName = track.name;
@@ -45,22 +42,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
         String? songImage = track.imageUrl;
         String? artistImage =
             track.artists.isNotEmpty ? track.artists.first : null;
-
         // Tìm kiếm video trên YouTube với tên bài hát và nghệ sĩ
         final yt = YoutubeExplode();
         final video =
             (await yt.search.search("$tempSongName $artistName")).first;
         final videoId = video.id.value;
-
         // Lấy thời lượng video
         Duration? duration = video.duration;
-
         setState(() {});
-
         // Lấy manifest của video và stream audio
         var manifest = await yt.videos.streamsClient.getManifest(videoId);
         var audioUrl = manifest.audioOnly.last.url;
-
         // Phát nhạc
         _player.play(UrlSource(audioUrl.toString()));
       }
@@ -120,28 +112,30 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 fontSize: 16,
               ),
             ),
-            const Spacer(),
-            Slider(
-              value: 0,
-              max: (widget.track.duration ?? 0).toDouble(),
-              onChanged: (value) async {},
-              activeColor: Colors.white,
-            ),
+            // const Spacer(),
+            // Slider(
+            //   value: 0,
+            //   max: (widget.track.duration ?? 0).toDouble(),
+            //   onChanged: (value) async {},
+            //   activeColor: Colors.white,
+            // ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "0:00",
-                  style: const TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  _formatDuration(
-                      Duration(milliseconds: widget.track.duration ?? 0)),
-                  style: const TextStyle(color: Colors.white70),
-                ),
-              ],
-            ),
+            StreamBuilder(
+                stream: _player.onPositionChanged,
+                builder: (context, data) {
+                  return ProgressBar(
+                    progress: data.data ?? const Duration(seconds: 0),
+                    total: Duration(milliseconds: widget.track.duration ?? 0),
+                    bufferedBarColor: Colors.white38,
+                    baseBarColor: Colors.white10,
+                    thumbColor: Colors.white,
+                    timeLabelTextStyle: const TextStyle(color: Colors.white),
+                    progressBarColor: Colors.white,
+                    onSeek: (duration) {
+                      _player.seek(duration);
+                    },
+                  );
+                }),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -199,11 +193,5 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
       ),
     );
-  }
-
-  String _formatDuration(Duration duration) {
-    final minutes = duration.inMinutes.toString().padLeft(2, '0');
-    final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
-    return "$minutes:$seconds";
   }
 }
