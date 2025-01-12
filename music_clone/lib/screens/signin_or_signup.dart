@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/screens/signin_screen.dart';
 import 'package:music_clone/screens/signup_screen.dart';
-import 'package:music_clone/widgets/app_bar.dart';
-import 'package:music_clone/widgets/basic_app_button.dart';
+import 'package:music_clone/widgets/widget_basic/app_bar.dart';
+import 'package:music_clone/widgets/widget_basic/basic_app_button.dart';
 
 class SigninOrSignup extends StatelessWidget {
   const SigninOrSignup({super.key});

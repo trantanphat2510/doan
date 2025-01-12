@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/screens/home_screen.dart';
 import 'package:music_clone/screens/signup_screen.dart';
-import 'package:music_clone/widgets/app_bar.dart';
-import 'package:music_clone/widgets/basic_app_button.dart';
-import 'package:music_clone/widgets/text_field.dart';
+import 'package:music_clone/widgets/widget_basic/app_bar.dart';
+import 'package:music_clone/widgets/widget_basic/basic_app_button.dart';
+import 'package:music_clone/widgets/widget_basic/text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SigninScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/screens/signin_or_signup.dart';
 import 'package:music_clone/screens/signin_screen.dart';
-import 'package:music_clone/widgets/basic_app_button.dart';
+import 'package:music_clone/widgets/widget_basic/basic_app_button.dart';
 
 class GetstartedScreen extends StatelessWidget {
   const GetstartedScreen({super.key});

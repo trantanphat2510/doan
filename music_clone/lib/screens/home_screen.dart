@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:music_clone/service/spotify_service.dart';
-import 'package:music_clone/widgets/spotify_list/spotify_album.dart';
-import 'package:music_clone/widgets/spotify_list/spotify_artist.dart';
-import '../models/album.dart';
-import '../models/artist.dart';
+import 'package:music_clone/widgets/pages/favorite_page.dart';
+import 'package:music_clone/widgets/pages/home_page.dart';
+import 'package:music_clone/widgets/pages/profile_page.dart';
+import 'package:music_clone/widgets/pages/search_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,6 +15,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
+  int _selectedIndex = 0;
+
+  List<Widget> pages = const [
+    HomePage(),
+    SearchPage(),
+    FavoritePage(),
+    ProfilePage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen>
                   onTap: () {},
                   child: const CircleAvatar(
                     radius: 18,
-                    backgroundImage: AssetImage("assets/avatar.png"),
+                    backgroundImage: AssetImage("assets/spotify_logo.png"),
                   ),
                 )
               ],
@@ -60,37 +68,7 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-      body: const SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Album Hot",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 30,
-                ),
-              ),
-              SpotifyAlbumList(),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Nghệ sĩ",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 30,
-                ),
-              ),
-              SpotifyArtistList(),
-            ],
-          ),
-        ),
-      ),
+      body: pages[_selectedIndex],
       bottomNavigationBar: Container(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
@@ -101,6 +79,12 @@ class _HomeScreenState extends State<HomeScreen>
             tabBackgroundColor: Colors.grey.shade800,
             gap: 8,
             padding: EdgeInsets.all(16),
+            selectedIndex: _selectedIndex,
+            onTabChange: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
             tabs: const [
               GButton(
                 icon: CupertinoIcons.home,

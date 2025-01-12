@@ -1,6 +1,8 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:marquee/marquee.dart';
 import 'package:music_clone/models/track.dart';
 import 'package:music_clone/service/spotify_service.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -17,6 +19,7 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
+  bool isLiked = false;
   final _player = AudioPlayer();
   final SpotifyService _spotifyService = SpotifyService(); // Dịch vụ Spotify
   String? _deviceId;
@@ -77,119 +80,173 @@ class _PlayerScreenState extends State<PlayerScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    image: NetworkImage(widget.imageUrl ?? ""),
-                    fit: BoxFit.fill,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 50,
+              ),
+              Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: NetworkImage(widget.imageUrl ?? ""),
+                      fit: BoxFit.fill,
+                    ),
                   ),
+                  width: 350,
+                  height: 350,
                 ),
-                width: 300,
-                height: 300,
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              widget.track.name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              widget.track.artists.join(', '),
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
-              ),
-            ),
-            // const Spacer(),
-            // Slider(
-            //   value: 0,
-            //   max: (widget.track.duration ?? 0).toDouble(),
-            //   onChanged: (value) async {},
-            //   activeColor: Colors.white,
-            // ),
-            const SizedBox(height: 8),
-            StreamBuilder(
-                stream: _player.onPositionChanged,
-                builder: (context, data) {
-                  return ProgressBar(
-                    progress: data.data ?? const Duration(seconds: 0),
-                    total: Duration(milliseconds: widget.track.duration ?? 0),
-                    bufferedBarColor: Colors.white38,
-                    baseBarColor: Colors.white10,
-                    thumbColor: Colors.white,
-                    timeLabelTextStyle: const TextStyle(color: Colors.white),
-                    progressBarColor: Colors.white,
-                    onSeek: (duration) {
-                      _player.seek(duration);
+              const SizedBox(height: 70),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 30, // Đảm bảo chiều cao cố định cho marquee
+                          child: Marquee(
+                            text: widget.track.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            scrollAxis: Axis.horizontal,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            blankSpace: 50.0,
+                            velocity: 30.0,
+                            pauseAfterRound: const Duration(seconds: 1),
+                            startPadding: 10.0,
+                            accelerationDuration: const Duration(seconds: 1),
+                            accelerationCurve: Curves.easeIn,
+                            decelerationDuration:
+                                const Duration(milliseconds: 500),
+                            decelerationCurve: Curves.easeOut,
+                          ),
+                        ),
+                        Text(
+                          widget.track.artists.join(', '),
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isLiked = !isLiked;
+                      });
                     },
-                  );
-                }),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.shuffle, color: Colors.white),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.skip_previous, color: Colors.white),
-                ),
-                IconButton(
-                    onPressed: () async {
-                      if (_player.state == PlayerState.playing) {
-                        await _player.pause();
-                      } else {
-                        await _player.resume();
-                      }
-                      setState(() {});
-                    },
-                    icon: Icon(
-                      _player.state == PlayerState.playing
-                          ? Icons.pause
-                          : Icons.play_circle,
+                    child: Icon(
+                      isLiked
+                          ? CupertinoIcons.heart_fill
+                          : CupertinoIcons.heart,
+                      color: isLiked ? Color(0xFF1DB954) : Colors.white54,
+                      size: 40,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              StreamBuilder(
+                  stream: _player.onPositionChanged,
+                  builder: (context, data) {
+                    return ProgressBar(
+                      progress: data.data ?? const Duration(seconds: 0),
+                      total: Duration(milliseconds: widget.track.duration ?? 0),
+                      bufferedBarColor: Colors.white30,
+                      baseBarColor: Colors.white30,
+                      thumbColor: Colors.white,
+                      timeLabelTextStyle: const TextStyle(color: Colors.white),
+                      progressBarColor: Colors.white,
+                      onSeek: (duration) {
+                        _player.seek(duration);
+                      },
+                    );
+                  }),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(CupertinoIcons.shuffle_medium,
+                        color: Colors.white),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.skip_previous,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () async {
+                        if (_player.state == PlayerState.playing) {
+                          await _player.pause();
+                        } else {
+                          await _player.resume();
+                        }
+                        setState(() {});
+                      },
+                      icon: Icon(
+                        _player.state == PlayerState.playing
+                            ? Icons.pause_circle
+                            : Icons.play_circle,
+                        color: Colors.white,
+                        size: 70,
+                      )),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.skip_next,
                       color: Colors.white,
                       size: 60,
-                    )),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.skip_next, color: Colors.white),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.access_time, color: Colors.white),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.list, color: Colors.white),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.share, color: Colors.white),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-          ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.repeat_one_outlined,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.list, color: Colors.white),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(CupertinoIcons.share, color: Colors.white),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

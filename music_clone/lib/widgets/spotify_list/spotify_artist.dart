@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/models/artist.dart';
 import 'package:music_clone/service/spotify_service.dart';
-import 'package:music_clone/screens/artist_details_screen.dart'; // Import the ArtistDetailsScreen
+import 'package:music_clone/screens/artist_details_screen.dart';
 
 class SpotifyArtistList extends StatelessWidget {
-  const SpotifyArtistList({Key? key}) : super(key: key);
+  final List<String> artistIds; // Tham số nhận danh sách ID nghệ sĩ
+
+  const SpotifyArtistList({Key? key, required this.artistIds})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final SpotifyService spotifyService = SpotifyService();
 
     return FutureBuilder<List<Artist>>(
-      future: Future.wait([
-        spotifyService.getArtist(
-            '5dfZ5uSmzR7VQK0udbAVpf'), // Replace with real artist IDs if you want.
-        spotifyService.getArtist("57g2v7gJZepcwsuwssIfZs"),
-        spotifyService.getArtist('0ZbgKh0FgPYeFP38nVaEGp'),
-        spotifyService.getArtist('4KPyQxL1zqEiBcTwW6c9HE'),
-        spotifyService.getArtist('3Wj34lTDJnPp70u4YCl4jz'),
-        spotifyService.getArtist('6CGGvCBHWqQ4HXtn5aLhbh'),
-      ]),
+      future: Future.wait(artistIds.map(
+          (id) => spotifyService.getArtist(id))), // Lấy danh sách nghệ sĩ từ ID
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -27,14 +23,14 @@ class SpotifyArtistList extends StatelessWidget {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (snapshot.hasData) {
           return SizedBox(
-            height: 270, // Adjust the height as needed
+            height: 270, // Chiều cao của ListView
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final artist = snapshot.data![index];
                 return SizedBox(
-                  width: 210, // Adjust the width as needed
+                  width: 210, // Chiều rộng của mỗi card nghệ sĩ
                   child: InkWell(
                     onTap: () {
                       Navigator.of(context).push(
@@ -48,8 +44,7 @@ class SpotifyArtistList extends StatelessWidget {
                       color: Colors.transparent,
                       clipBehavior: Clip.antiAlias,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            10.0), // Adjust corner rounding
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,9 +56,7 @@ class SpotifyArtistList extends StatelessWidget {
                                     fit: BoxFit.cover,
                                     width: double.infinity,
                                   )
-                                : Container(
-                                    color:
-                                        Colors.grey), // Placeholder if no image
+                                : Container(color: Colors.grey),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -78,16 +71,6 @@ class SpotifyArtistList extends StatelessWidget {
                                     color: Colors.white,
                                   ),
                                 ),
-                                // Text(
-                                //   artist.genres.join(', '),
-                                //   style: const TextStyle(
-                                //     fontSize: 14,
-                                //     color: Colors.white60,
-                                //   ),
-                                //   maxLines: 1,
-                                //   overflow: TextOverflow
-                                //       .ellipsis, // to avoid overflow
-                                // ),
                               ],
                             ),
                           ),
