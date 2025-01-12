@@ -15,8 +15,10 @@ class HomePage extends StatelessWidget {
       '7kFyd5oyJdVX2pIi6P4iHE',
       '5pSk3c3wVwnb2arb6ohCPU',
       '1wmnEWgcDdCcOujQpLwYxc',
+      '69sGrzymuW18usgEvLnvU1',
     ];
     const albumhotIds = [
+      '5YGkaz5ebB2nnE8o7IWCzw',
       '3jQb4fnTYtHAP90TNLaj3y',
       '19nGMLMd8gjMQwgh2aYmsx',
       '1UcLMdWtu9nmgZfDRNtdan',
@@ -26,12 +28,14 @@ class HomePage extends StatelessWidget {
     ];
     const artistIds = [
       '5dfZ5uSmzR7VQK0udbAVpf',
+      '3diftVOq7aEIebXKkC34oR',
       '57g2v7gJZepcwsuwssIfZs',
       '0ZbgKh0FgPYeFP38nVaEGp',
       '4KPyQxL1zqEiBcTwW6c9HE',
       '3Wj34lTDJnPp70u4YCl4jz',
-      '6CGGvCBHWqQ4HXtn5aLhbh',
+      '2aQnC3DbZB9GbauvhAw7ve',
       '3JWIaDWHJq11w1xPqJStEv',
+      '6TITnFVRcl0AcZ4syE7Toe',
     ];
 
     return SingleChildScrollView(
@@ -51,7 +55,7 @@ class HomePage extends StatelessWidget {
             SpotifyAlbumList(albumIds: albumIds),
             const SizedBox(height: 20),
             const Text(
-              "Nghệ sĩ",
+              "Nghệ sĩ phổ biến",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,

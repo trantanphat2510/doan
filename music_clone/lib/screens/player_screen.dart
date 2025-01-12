@@ -156,7 +156,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       isLiked
                           ? CupertinoIcons.heart_fill
                           : CupertinoIcons.heart,
-                      color: isLiked ? Color(0xFF1DB954) : Colors.white54,
+                      color: isLiked ? Colors.red : Colors.white54,
                       size: 40,
                     ),
                   ),

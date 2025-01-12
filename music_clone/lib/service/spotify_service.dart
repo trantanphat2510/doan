@@ -168,4 +168,32 @@ class SpotifyService {
       return null;
     }
   }
+
+  Future<Map<String, List<dynamic>>> search(String query,
+      {int limit = 20}) async {
+    final token = await _getAccessToken();
+    final encodedQuery = Uri.encodeComponent(query);
+    final response = await http.get(
+      Uri.parse(
+          'https://api.spotify.com/v1/search?q=$encodedQuery&type=track,album,artist&limit=$limit'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return {
+        'tracks': (data['tracks']['items'] as List)
+            .map((item) => Track.fromJson(item))
+            .toList(),
+        'albums': (data['albums']['items'] as List)
+            .map((item) => Album.fromJson(item))
+            .toList(),
+        'artists': (data['artists']['items'] as List)
+            .map((item) => Artist.fromJson(item))
+            .toList(),
+      };
+    } else {
+      throw Exception('Failed to perform search');
+    }
+  }
 }

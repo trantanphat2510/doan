@@ -7,7 +7,7 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -67,7 +67,7 @@ class SearchPage extends StatelessWidget {
 
   Widget _buildCategoryGrid() {
     return SizedBox(
-      height: 180, // Adjust as needed
+      height: 250,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: const [
@@ -117,6 +117,22 @@ class SearchPage extends StatelessWidget {
         _BrowseCard(
           title: 'Nhạc trong năm\n2024',
           color: Color(0xFF196073),
+        ),
+        _BrowseCard(
+          title: 'Dành cho bạn',
+          color: Color.fromARGB(255, 23, 140, 194),
+        ),
+        _BrowseCard(
+          title: 'Mới phát hành',
+          color: Color.fromARGB(255, 180, 52, 52),
+        ),
+        _BrowseCard(
+          title: 'Pop',
+          color: Color.fromARGB(255, 141, 112, 161),
+        ),
+        _BrowseCard(
+          title: 'K-Pop',
+          color: Color.fromARGB(255, 29, 87, 68),
         ),
       ],
     );
