@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'package:music_clone/service/auth_service.dart';
+import 'package:music_clone/widgets/pages/edit_profile.dart';
 import 'package:music_clone/widgets/widget_basic/basic_app_button.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -79,7 +80,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfile()));
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white70,
                       padding: const EdgeInsets.symmetric(
@@ -94,16 +100,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(
-                    height: 360,
+                    height: 350,
                   ),
                   BasicAppButton(
-                      title: "Đăng xuất",
-                      onPressed: () async {
-                        await _authService.signOut();
-                        // Optionally navigate back to login page
-                        Navigator.of(context).pop();
-                      },
-                      height: 50)
+                    title: "Đăng xuất",
+                    onPressed: () async {
+                      await _authService.signOut();
+                      Navigator.of(context).pop();
+                    },
+                    height: 50,
+                  )
                 ],
               ),
             ),

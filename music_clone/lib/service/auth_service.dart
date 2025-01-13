@@ -37,4 +37,19 @@ class AuthService {
       print("Error signing out: $e");
     }
   }
+
+  Future<void> updateUserProfile({
+    required String displayName,
+    String? phoneNumber, // Nếu cần lưu thông tin số điện thoại
+  }) async {
+    User? user = _auth.currentUser;
+
+    if (user != null) {
+      await user.updateDisplayName(displayName);
+      // Nếu cần thêm các logic cập nhật khác, xử lý tại đây.
+      await user.reload(); // Tải lại thông tin người dùng
+    } else {
+      throw Exception("No user is signed in");
+    }
+  }
 }

@@ -4,11 +4,14 @@ class TextFieldInput extends StatelessWidget {
   final TextEditingController? controller;
   final String hintText;
   final bool isPassword;
-  const TextFieldInput(
-      {super.key,
-      required this.hintText,
-      this.controller,
-      this.isPassword = false});
+  final bool readOnly;
+  const TextFieldInput({
+    super.key,
+    required this.hintText,
+    this.controller,
+    this.isPassword = false,
+    this.readOnly = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,7 @@ class TextFieldInput extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
           ),
         ),
+        readOnly: readOnly,
       ),
     );
   }

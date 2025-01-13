@@ -114,24 +114,56 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       children: [
                         SizedBox(
                           height: 30, // Đảm bảo chiều cao cố định cho marquee
-                          child: Marquee(
-                            text: widget.track.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            scrollAxis: Axis.horizontal,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            blankSpace: 50.0,
-                            velocity: 30.0,
-                            pauseAfterRound: const Duration(seconds: 1),
-                            startPadding: 10.0,
-                            accelerationDuration: const Duration(seconds: 1),
-                            accelerationCurve: Curves.easeIn,
-                            decelerationDuration:
-                                const Duration(milliseconds: 500),
-                            decelerationCurve: Curves.easeOut,
+                          child: Builder(
+                            builder: (context) {
+                              final text = widget.track.name;
+                              final style = const TextStyle(
+                                color: Colors.white,
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              );
+
+                              // Đo chiều rộng của văn bản
+                              final textPainter = TextPainter(
+                                text: TextSpan(text: text, style: style),
+                                maxLines: 1,
+                                textDirection: TextDirection.ltr,
+                              )..layout();
+
+                              // Kiểm tra nếu chiều rộng văn bản vượt quá chiều rộng màn hình
+                              final textWidth = textPainter.size.width;
+                              final screenWidth =
+                                  MediaQuery.of(context).size.width -
+                                      60; // Padding
+
+                              // Nếu dài hơn chiều rộng màn hình -> dùng Marquee
+                              if (textWidth > screenWidth) {
+                                return Marquee(
+                                  text: text,
+                                  style: style,
+                                  scrollAxis: Axis.horizontal,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  blankSpace: 200.0,
+                                  velocity: 30.0,
+                                  pauseAfterRound: const Duration(seconds: 1),
+                                  startPadding: 10.0,
+                                  accelerationDuration:
+                                      const Duration(seconds: 1),
+                                  accelerationCurve: Curves.easeIn,
+                                  decelerationDuration:
+                                      const Duration(milliseconds: 500),
+                                  decelerationCurve: Curves.easeOut,
+                                );
+                              } else {
+                                // Nếu không, hiển thị văn bản đứng yên
+                                return Text(
+                                  text,
+                                  style: style,
+                                  overflow: TextOverflow
+                                      .ellipsis, // Phòng trường hợp lỗi nhỏ
+                                );
+                              }
+                            },
                           ),
                         ),
                         Text(

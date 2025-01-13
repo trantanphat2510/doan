@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:music_clone/models/track.dart';
 import 'package:music_clone/widgets/pages/favorite_page.dart';
 import 'package:music_clone/widgets/pages/home_page.dart';
 import 'package:music_clone/widgets/pages/profile_page.dart';

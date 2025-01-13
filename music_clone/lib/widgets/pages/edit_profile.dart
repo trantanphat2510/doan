@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/service/auth_service.dart';
 import 'package:music_clone/widgets/widget_basic/text_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EditProfile extends StatefulWidget {
-  final String? initialName;
-  final String? initialPhone;
-  final String? initialEmail;
-
-  const EditProfile(
-      {Key? key, this.initialName, this.initialPhone, this.initialEmail})
-      : super(key: key);
+  const EditProfile({Key? key}) : super(key: key);
 
   @override
   _EditProfileState createState() => _EditProfileState();
@@ -26,9 +21,34 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.initialName);
-    _phoneController = TextEditingController(text: widget.initialPhone);
-    _emailController = TextEditingController(text: widget.initialEmail);
+    _nameController = TextEditingController();
+    _phoneController = TextEditingController();
+    _emailController = TextEditingController();
+    _loadUserProfile(); // Load thông tin người dùng
+  }
+
+  Future<void> _loadUserProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        _nameController.text = user.displayName ?? '';
+        _emailController.text = user.email ?? '';
+        // Bạn có thể mở rộng logic này nếu lưu số điện thoại trong Firestore
+      }
+    } catch (e) {
+      print('Error loading user profile: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lỗi khi tải thông tin người dùng')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -65,17 +85,41 @@ class _EditProfileState extends State<EditProfile> {
                       TextFieldInput(
                         controller: _emailController,
                         hintText: 'Email',
+                        readOnly: true,
                       ),
                       const SizedBox(height: 16),
-                      TextFieldInput(
-                        controller: _phoneController,
-                        hintText: 'Phone Number',
-                      ),
-                      const SizedBox(height: 24),
                       ElevatedButton(
-                        onPressed: (){},
+                        onPressed: () async {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            try {
+                              await _authService.updateUserProfile(
+                                displayName: _nameController.text,
+                                phoneNumber: _phoneController.text,
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Đã cập nhật hồ sơ thành công!')),
+                              );
+                            } catch (e) {
+                              print('Error updating profile: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Nhập sai rồi. Hãy nhập lại.')),
+                              );
+                            } finally {
+                              setState(() {
+                                _isLoading = false;
+                              });
+                            }
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
+                          backgroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         child: const Text(
