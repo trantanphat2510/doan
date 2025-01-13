@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_clone/widgets/spotify_list/spotify_album.dart';
 import 'package:music_clone/widgets/spotify_list/spotify_artist.dart';
+import 'package:music_clone/widgets/spotify_list/spotify_playlist.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -39,6 +40,15 @@ class HomePage extends StatelessWidget {
       '6TITnFVRcl0AcZ4syE7Toe',
     ];
 
+    const playlistIds = [
+      '5r0mdLamHzeoCRh5g93WL5',
+      '1nhXQxfytaQBfltWkjrkK1',
+      '3DmgBuOimqSMVr8azR0Fy9',
+      '0aiBKNSqiPnhtcw1QlXK5s',
+      '1w5wJJysPCNTAylZirgfYd',
+      '41gXyhLcGEH0jXJYoORkbo',
+    ];
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -74,6 +84,16 @@ class HomePage extends StatelessWidget {
               ),
             ),
             SpotifyAlbumList(albumIds: albumhotIds),
+            const SizedBox(height: 20),
+            const Text(
+              "Playlist",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 26,
+              ),
+            ),
+            SpotifyPlaylistList(playlistIds: playlistIds),
           ],
         ),
       ),

@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:music_clone/models/album.dart';
 import 'package:music_clone/models/artist.dart';
-import 'package:music_clone/models/track.dart'; // Import the Track model
+import 'package:music_clone/models/playlist.dart';
+import 'package:music_clone/models/track.dart';
 
 class SpotifyService {
-  final String _baseUrl = "https://api.spotify.com/v1/search";
   final String clientId = '352bf371f0504729ac018c8516f2636f';
   final String clientSecret = 'd17120c44de240538428537363f6d719';
   String? _accessToken;
@@ -184,6 +184,40 @@ class SpotifyService {
       return data['tracks']['items'];
     } else {
       throw Exception('Failed to load search results');
+    }
+  }
+
+  Future<Playlist> getPlaylist(String id) async {
+    final token = await _getAccessToken();
+    final response = await http.get(
+      Uri.parse('https://api.spotify.com/v1/playlists/$id'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return Playlist.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load playlist');
+    }
+  }
+
+  Future<List<Track>> getTracksFromPlaylist(String playlistId) async {
+    final token = await _getAccessToken();
+    final response = await http.get(
+      Uri.parse('https://api.spotify.com/v1/playlists/$playlistId/tracks'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      final List<dynamic> items = data['items'];
+      return items
+          .map((item) => Track.fromJson(item['track']))
+          .where((track) => track != null)
+          .toList()
+          .cast<Track>();
+    } else {
+      throw Exception('Failed to load tracks from playlist');
     }
   }
 }
