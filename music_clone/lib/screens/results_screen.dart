@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_clone/models/track.dart';
 import 'package:music_clone/screens/player_screen.dart';
 import 'package:music_clone/service/spotify_service.dart';
 
@@ -11,7 +12,7 @@ class ResultsScreen extends StatefulWidget {
 }
 
 class _ResultsScreenState extends State<ResultsScreen> {
-  List<dynamic> _searchResults = [];
+  List<Track> _searchResults = [];
 
   @override
   void initState() {
@@ -25,10 +26,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
       final spotifyService = SpotifyService();
       final results = await spotifyService.searchTracks(query);
       setState(() {
-        _searchResults = results;
+        _searchResults = results.map((e) => Track.fromJson(e)).toList();
       });
     } catch (e) {
-      // Xử lý lỗi nếu có
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Lỗi khi tìm kiếm: $e'),
       ));
@@ -51,7 +51,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 final track = _searchResults[index];
                 return ListTile(
                   title: Text(
-                    track['name'],
+                    track.name,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 19,
@@ -59,19 +59,24 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     ),
                   ),
                   subtitle: Text(
-                    track['artists'][0]['name'],
+                    track.artists.join(', '),
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 16,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  leading: Image.network(track['album']['images'][0]['url']),
+                  leading: track.imageUrl != null
+                      ? Image.network(track.imageUrl!)
+                      : Container(),
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PlayerScreen(track: track),
+                        builder: (context) => PlayerScreen(
+                          track: track,
+                          imageUrl: track.imageUrl,
+                        ),
                       ),
                     );
                   },
