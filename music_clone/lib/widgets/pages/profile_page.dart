@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return _loading
         ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
+        : Container(
             child: Center(
               child: Column(
                 children: [
@@ -94,7 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(
-                    height: 320,
+                    height: 360,
                   ),
                   BasicAppButton(
                       title: "Đăng xuất",
@@ -103,7 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         // Optionally navigate back to login page
                         Navigator.of(context).pop();
                       },
-                      height: 70)
+                      height: 50)
                 ],
               ),
             ),

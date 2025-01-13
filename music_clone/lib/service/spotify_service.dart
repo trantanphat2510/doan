@@ -5,6 +5,7 @@ import 'package:music_clone/models/artist.dart';
 import 'package:music_clone/models/track.dart'; // Import the Track model
 
 class SpotifyService {
+  final String _baseUrl = "https://api.spotify.com/v1/search";
   final String clientId = '352bf371f0504729ac018c8516f2636f';
   final String clientSecret = 'd17120c44de240538428537363f6d719';
   String? _accessToken;
@@ -169,31 +170,20 @@ class SpotifyService {
     }
   }
 
-  Future<Map<String, List<dynamic>>> search(String query,
-      {int limit = 20}) async {
+  Future<List<dynamic>> searchTracks(String query) async {
     final token = await _getAccessToken();
-    final encodedQuery = Uri.encodeComponent(query);
+    final url =
+        'https://api.spotify.com/v1/search?q=$query&type=track&limit=50'; // API request URL
     final response = await http.get(
-      Uri.parse(
-          'https://api.spotify.com/v1/search?q=$encodedQuery&type=track,album,artist&limit=$limit'),
+      Uri.parse(url),
       headers: {'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      return {
-        'tracks': (data['tracks']['items'] as List)
-            .map((item) => Track.fromJson(item))
-            .toList(),
-        'albums': (data['albums']['items'] as List)
-            .map((item) => Album.fromJson(item))
-            .toList(),
-        'artists': (data['artists']['items'] as List)
-            .map((item) => Artist.fromJson(item))
-            .toList(),
-      };
+      return data['tracks']['items'];
     } else {
-      throw Exception('Failed to perform search');
+      throw Exception('Failed to load search results');
     }
   }
 }

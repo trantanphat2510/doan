@@ -33,6 +33,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   void initState() {
     super.initState();
+    final track = widget.track;
     // Khởi tạo SpotifyService
     final spotifyService = SpotifyService();
     // Lấy thông tin track từ Spotify bằng trackId
@@ -156,7 +157,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       isLiked
                           ? CupertinoIcons.heart_fill
                           : CupertinoIcons.heart,
-                      color: isLiked ? Colors.red : Colors.white54,
+                      color: isLiked ? Color(0xFF1DB954) : Colors.white54,
                       size: 40,
                     ),
                   ),
@@ -209,7 +210,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         _player.state == PlayerState.playing
                             ? Icons.pause_circle
                             : Icons.play_circle,
-                        color: Colors.white,
+                        color: Color(0xFF1DB954),
                         size: 70,
                       )),
                   IconButton(
