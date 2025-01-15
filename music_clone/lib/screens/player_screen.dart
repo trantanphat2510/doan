@@ -33,7 +33,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   void initState() {
     super.initState();
-    final track = widget.track;
     // Khởi tạo SpotifyService
     final spotifyService = SpotifyService();
     // Lấy thông tin track từ Spotify bằng trackId
